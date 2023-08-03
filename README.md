@@ -1,14 +1,10 @@
-# Dash Financial Report
+# Reporte demo imprimible
 
-This is a demo of the [Dash](https://plot.ly/products/dash/) interactive Python framework developed by [Plotly](https://plot.ly/).
-
-Dash abstracts away all of the technologies and protocols required to build an interactive web-based application and is a simple and effective way to bind a user interface around your Python code. To learn more about Dash, take a look at our [documentation](https://dash.plot.ly). If you're interested in deploying this application, check out [Dash Deployment Server](https://dash.plot.ly/dash-deployment-server/) - Plotly's commercial offering for hosting and sharing Dash Apps on-premise or in the cloud.
+Esta versión corresponde a la versión de deployment, es decir, no posee activado el debugger y se inicia el servicio mediante imágenes de Docker ya sea de forma local o web usando Gcloud.
 
 ## Getting Started
 
-### Running the app locally
-
-First create a virtual environment with conda or venv inside a temp folder, then activate it.
+Para crear el entorno virtual (fuera del directorio de trabajo) y activarlo.
 
 ```
 virtualenv venv
@@ -20,38 +16,51 @@ source venv/bin/activate
 
 ```
 
-Clone the git repo, then install the requirements with pip
+Clonar el repositorio de git e instalar las librerías con pip
 
 ```
 
 git clone https://github.com/plotly/dash-sample-apps
-cd dash-sample-apps/apps/dash-financial-report
 pip install -r requirements.txt
 
-```
-
-Run the app
 
 ```
 
-python app.py
+### Ejecutar la aplicación de manera local
+Para ejecutar la aplicación, se debe tener instalado docker. Luego, para crear y ejecutar la imagen:
 
 ```
 
-## About the app
+docker-compose build
+docker-compose up -d
 
-This is an interactive, multi-page report which displays a variety of tables, bullet points, and Plotly interactive plots in a report format. The app incorporates custom local and external CSS to display distinct pages for PDF print.
+```
+### Ejecutar la aplicación en Gcloud
+Primero autenticarse e ingresar a la carpeta de trabajo en Gcloud reporte-piloto-dev con:
+
+```
+
+Gcloud init
+
+```
+Subir la imagen (se guardara en el contenedor de registros en la carpeta dash):
+```
+
+gcloud builds submit --tag gcr.io/reporte-piloto-dev/dash
+
+```
+
+## Sobre la app
+
+Este demo contiene solo la simulación del caso base (sin fallas) y una simulación de falla (falla central Andina). La arquitectura de la aplicación está pensada para escalarla a más simulaciones o actualizaciones de datos de forma sencilla.
+
+Para agregar los datos se deben realizar básicamente 2 pasos una vez se tengan los csv resultantes de la simulación del modelo plp. 
+
+- Preprocesar los csv: En la carpeta ... se encuentran 3 archivos de python (La actualización de margen planta y contrato se puede realizar sin actualizar los supuestos, esto es, solo con los archivos centralesbarras.py y retiros.py). En aquellos archivos, se debe seleccionar la carpeta en donde se encuentran los csv. Luego, se deben ejecutar los 3 archivos (o 2 en caso de no usar el archivo supuestos.py). Como resultado, se obtendrán 8 parquets (5 en caso de no actualizar supuestos) que serán guardados en lacarpeta de destino seleccioanada en cada uno de los archivos de python. Esos parquets deben ser agregados a la carpeta data (o reemplazar los archivos existentes en caso de solo querer actualizar)
+- Agregar archivos en el código: En los archivos margen-contrato.py, margen-planta.py, resumen.py y tablas, cambiar los nombres del los parquets en caso de que se hayan cambiado o agregar los parquets adicionales (nueva falla).
 
 ## Built With
 
 - [Dash](https://dash.plot.ly/) - Main server and interactive components
 - [Plotly Python](https://plot.ly/python/) - Used to create the interactive plots
-
-The following are screenshots for the app in this repo:
-
-![animated](screenshots/dash-financial-report-demo.gif)
-
-![screenshot](screenshots/report-screenshot.png)
-
-![screenshot](screenshots/report-interactive.png)
 
