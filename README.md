@@ -20,7 +20,7 @@ Clonar el repositorio de git e instalar las librerías con pip
 
 ```
 
-git clone https://github.com/plotly/dash-sample-apps
+gh repo clone Marcelorojasb/reporte-imprimible
 pip install -r requirements.txt
 
 
